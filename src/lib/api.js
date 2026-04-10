@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://103.87.66.92:5000/api' ;
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://sikopnas.web.id/api' ;
 
 const api = axios.create({
   baseURL: API_BASE_URL,
