@@ -1,0 +1,50 @@
+{
+  "name": "sikopnas-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@heroicons/react": "^2.2.0",
+    "@mui/icons-material": "^7.3.5",
+    "@mui/material": "^7.3.5",
+    "@mui/x-date-pickers": "^8.17.0",
+    "apexcharts": "^5.3.6",
+    "axios": "^1.13.1",
+    "chart.js": "^4.5.1",
+    "date-fns": "^4.1.0",
+    "firebase": "^12.7.0",
+    "firebase-admin": "^13.6.0",
+    "html2canvas": "^1.4.1",
+    "js-cookie": "^3.0.5",
+    "jspdf": "^4.0.0",
+    "jspdf-autotable": "^5.0.7",
+    "leaflet": "^1.9.4",
+    "leaflet-image": "^0.4.0",
+    "lucide-react": "^0.552.0",
+    "luxon": "^3.7.2",
+    "next": "^16.1.0",
+    "nprogress": "^0.2.0",
+    "react": "19.2.0",
+    "react-apexcharts": "^1.9.0",
+    "react-chartjs-2": "^5.3.1",
+    "react-dom": "19.2.0",
+    "react-is": "^19.2.3",
+    "recharts": "^3.6.0",
+    "sweetalert2": "^11.26.3",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.16",
+    "babel-plugin-react-compiler": "1.0.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.0.1",
+    "tailwindcss": "^4"
+  }
+}
