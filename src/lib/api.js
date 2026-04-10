@@ -190,6 +190,7 @@ export const izinAPI = {
   updateStatus: (id, status) => api.patch(`/izin/${id}/status`, { status }),
   // Delete izin
   delete: (id) => api.delete(`/izin/${id}`),
+ downloadDokumen: (filename) => api.get(`/izin/download/${filename}`),
 };
 // lib/api.js - Update kinerjaAPI section
 

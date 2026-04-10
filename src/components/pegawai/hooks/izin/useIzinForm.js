@@ -61,6 +61,7 @@ export function useIzinForm(editData, onSuccess) {
     setFormData(prev => ({ ...prev, [name]: value }));
   }, []);
 
+  // MODIFIKASI: Hanya menerima file PDF
   const handleFileUpload = useCallback((files) => {
     const validFiles = Array.from(files).filter(file => {
       if (file.size > 5 * 1024 * 1024) {
@@ -68,9 +69,10 @@ export function useIzinForm(editData, onSuccess) {
         return false;
       }
       
-      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+      // HANYAKAN MENERIMA PDF
+      const allowedTypes = ['application/pdf'];
       if (!allowedTypes.includes(file.type)) {
-        alert(`File ${file.name} harus PDF, JPG, atau PNG`);
+        alert(`File ${file.name} harus berupa PDF!`);
         return false;
       }
       

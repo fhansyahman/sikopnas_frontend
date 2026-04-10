@@ -2,6 +2,8 @@
 
 import { X, Calendar, FileText, Download, Check } from "lucide-react";
 import { StatusBadge, JenisBadge } from "./Badges";
+import { izinAPI } from "@/lib/api";
+import Swal from "sweetalert2";
 
 export function DetailModal({ isOpen, onClose, izin, onUpdateStatus }) {
   if (!isOpen || !izin) return null;
@@ -24,6 +26,42 @@ export function DetailModal({ isOpen, onClose, izin, onUpdateStatus }) {
       minute: '2-digit'
     });
   };
+
+  // FUNGSI DOWNLOAD DOKUMEN
+  const handleDownload = async (filename) => {
+  if (!filename) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Gagal!',
+      text: 'Nama file tidak ditemukan'
+    });
+    return;
+  }
+
+  try {
+    // Gunakan cara yang sama seperti pegawai - akses file static
+    const fileUrl = `http://localhost:5000/uploads/izin/${filename}`;
+    
+    // Buka di tab baru (sama seperti yang digunakan pegawai)
+    window.open(fileUrl, '_blank');
+    
+    Swal.fire({
+      icon: 'success',
+      title: 'Berhasil!',
+      text: 'Dokumen sedang diunduh',
+      timer: 1500,
+      showConfirmButton: false
+    });
+    
+  } catch (error) {
+    console.error('Download error:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Gagal!',
+      text: 'Gagal mengunduh dokumen'
+    });
+  }
+};
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -98,17 +136,26 @@ export function DetailModal({ isOpen, onClose, izin, onUpdateStatus }) {
             </div>
           </div>
 
-          {/* Dokumen Pendukung */}
+          {/* Dokumen Pendukung - UPDATE TOMBOL DOWNLOAD */}
           {izin.dokumen_pendukung && (
             <div className="bg-gray-50 rounded-xl p-5 mb-8">
               <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                 <FileText size={18} />
                 Dokumen Pendukung
               </h4>
-              <button className="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-medium">
-                <Download size={16} />
-                Download Dokumen
-              </button>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <FileText size={14} />
+                  <span>{izin.dokumen_pendukung}</span>
+                </div>
+                <button
+                  onClick={() => handleDownload(izin.dokumen_pendukung)}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium transition-colors"
+                >
+                  <Download size={16} />
+                  Download Dokumen
+                </button>
+              </div>
             </div>
           )}
 
