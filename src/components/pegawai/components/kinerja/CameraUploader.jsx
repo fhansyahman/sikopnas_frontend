@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { Camera, Image, X, MapPin } from "lucide-react";
+import { Camera, Image, X, MapPin, Download } from "lucide-react";
 import CameraCapture from "./CameraCapture";
 
 export default function CameraUploader({ 
@@ -37,6 +37,21 @@ export default function CameraUploader({
       };
       onFileChange(syntheticEvent, null);
       setTempPhoto(null);
+    }
+  };
+
+  // Fungsi untuk download foto - TIDAK trigger submit
+  const handleDownloadPhoto = (e) => {
+    e.preventDefault();  // Cegah submit form
+    e.stopPropagation(); // Cegah event bubbling
+    
+    if (tempPhoto) {
+      const link = document.createElement('a');
+      link.href = tempPhoto;
+      link.download = `foto_${photoKey}_${Date.now()}.jpg`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
   };
 
@@ -108,13 +123,13 @@ export default function CameraUploader({
         locationData={locationData}
       />
       
-      {/* Preview sebelum konfirmasi */}
+      {/* Preview dengan tombol Download Hijau */}
       {tempPhoto && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
             <div className="p-4 border-b border-slate-200">
               <h3 className="text-lg font-semibold">Preview Foto</h3>
-              <p className="text-sm text-slate-500">Apakah foto ini sudah benar?</p>
+              <p className="text-sm text-slate-500">Download foto hasil tangkapan kamera</p>
             </div>
             <div className="p-4">
               <img 
@@ -125,16 +140,19 @@ export default function CameraUploader({
             </div>
             <div className="p-4 border-t border-slate-200 flex gap-3">
               <button
+                type="button"
                 onClick={() => setTempPhoto(null)}
-                className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg"
+                className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
               >
                 Ambil Ulang
               </button>
               <button
-                onClick={handleConfirmPhoto}
-                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg"
+                type="button"
+                onClick={handleDownloadPhoto}
+                className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
               >
-                Gunakan Foto Ini
+                <Download size={16} />
+                Download Foto
               </button>
             </div>
           </div>
