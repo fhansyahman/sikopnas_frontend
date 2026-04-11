@@ -52,20 +52,11 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3 sm:gap-4">
               <div className="relative w-12 h-12 sm:w-16 sm:h-16">
-                <Image 
-                  src="/bws.png" 
-                  alt="Logo BWS" 
-                  fill
-                  className="object-contain"
-                  priority
-                  sizes="(max-width: 640px) 48px, 64px"
-                />
               </div>
               <div>
                 <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
                   SIKO<span className="text-yellow-500">PNAS</span>
                 </h1>
-                <p className="text-xs sm:text-sm text-gray-600">Sistem Pemantauan Kinerja Pekerja Non-ASN</p>
               </div>
             </div>
             
@@ -132,14 +123,6 @@ export default function HomePage() {
               <div className="lg:w-1/2 flex justify-center mt-8 lg:mt-0">
                 <div className="relative w-full max-w-xs sm:max-w-sm md:max-w-lg">
                   <div className="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 mx-auto">
-                    <Image 
-                      src="/bws.png" 
-                      alt="Logo SIKOPNAS" 
-                      fill
-                      className="object-contain drop-shadow-2xl"
-                      priority
-                      sizes="(max-width: 640px) 256px, (max-width: 768px) 288px, 320px"
-                    />
                   </div>
                   
                   <div className="absolute -top-4 -left-4 sm:-top-6 sm:-left-6 w-28 h-28 sm:w-40 sm:h-40 bg-blue-100 rounded-3xl rotate-12 opacity-50" />
@@ -211,28 +194,18 @@ export default function HomePage() {
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 sm:gap-8">
             <div className="flex items-center gap-3 sm:gap-4">
               <div className="relative w-10 h-10 sm:w-12 sm:h-12">
-                <Image 
-                  src="/bws.png" 
-                  alt="Logo" 
-                  fill
-                  className="object-contain"
-                  sizes="40px"
-                />
+
               </div>
               <div>
                 <h3 className="text-lg sm:text-xl font-bold">
                   SIKO<span className="text-yellow-400">PNAS</span>
                 </h3>
-                <p className="text-gray-400 text-xs sm:text-sm">Balai Wilayah Sungai</p>
               </div>
             </div>
             
             <div className="text-center md:text-right">
               <p className="text-gray-400 text-sm sm:text-base">
                 © {new Date().getFullYear()} SIKOPNAS. Hak Cipta Dilindungi.
-              </p>
-              <p className="text-gray-500 text-xs sm:text-sm mt-1 sm:mt-2">
-                Versi 1.0 | Sistem Pemantauan Kinerja Pekerja Non-ASN
               </p>
             </div>
           </div>
