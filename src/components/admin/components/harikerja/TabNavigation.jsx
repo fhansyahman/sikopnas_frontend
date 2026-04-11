@@ -5,7 +5,6 @@ import { CalendarDays, Workflow, PartyPopper } from "lucide-react";
 export function TabNavigation({ activeTab, onTabChange }) {
   const tabs = [
     { id: 'kalender', label: 'Kalender', icon: <CalendarDays size={18} />, color: 'blue' },
-    { id: 'hari-kerja', label: 'Hari Kerja', icon: <Workflow size={18} />, color: 'green' },
     { id: 'hari-libur', label: 'Hari Libur', icon: <PartyPopper size={18} />, color: 'purple' },
   ];
 

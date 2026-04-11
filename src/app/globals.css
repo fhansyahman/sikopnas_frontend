@@ -108,6 +108,12 @@ body {
   @apply ml-2 text-5xl font-extrabold text-black;
 }
 
+.web-title {
+  @apply ml-1 text-7xl font-extrabold text-black;
+  position: relative; /* atau absolute, fixed, sticky */
+  z-index: 9999;      /* angka besar agar di depan */
+}
+
 .highlight-yellow {
   @apply text-yellow-500;
 }

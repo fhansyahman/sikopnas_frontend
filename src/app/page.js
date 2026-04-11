@@ -53,8 +53,9 @@ export default function HomePage() {
             <div className="flex items-center gap-3 sm:gap-4">
               <div className="relative w-12 h-12 sm:w-16 sm:h-16">
               </div>
+
               <div>
-                <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+                <h1 className="text-xl sm:text-4xl font-bold text-gray-900 font-extrabold">
                   SIKO<span className="text-yellow-500">PNAS</span>
                 </h1>
               </div>
@@ -83,7 +84,6 @@ export default function HomePage() {
                   <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
                     Pantau Kinerja
                     <span className="block text-blue-600">Lebih Efisien</span>
-                    <span className="text-yellow-500">dengan SIKOPNAS</span>
                   </h1>
                   <p className="text-base sm:text-lg md:text-xl text-gray-600 mt-4 sm:mt-6 leading-relaxed">
                     Sistem pemantauan kinerja pekerja Non-ASN terintegrasi pertama untuk 
@@ -123,6 +123,9 @@ export default function HomePage() {
               <div className="lg:w-1/2 flex justify-center mt-8 lg:mt-0">
                 <div className="relative w-full max-w-xs sm:max-w-sm md:max-w-lg">
                   <div className="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 mx-auto">
+                              <h1 className="web-title">
+            SIKO<span className="highlight-yellow">PNAS</span>
+          </h1>
                   </div>
                   
                   <div className="absolute -top-4 -left-4 sm:-top-6 sm:-left-6 w-28 h-28 sm:w-40 sm:h-40 bg-blue-100 rounded-3xl rotate-12 opacity-50" />

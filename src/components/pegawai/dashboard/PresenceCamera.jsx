@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Camera, RefreshCw, MapPin } from "lucide-react";
+import { Camera, MapPin } from "lucide-react";
 
 export default function PresenceCamera({ 
   onCapture, 
@@ -13,16 +13,11 @@ export default function PresenceCamera({
 }) {
   const [stream, setStream] = useState(null);
   const [foto, setFoto] = useState(null);
-  const [cameraDevices, setCameraDevices] = useState([]);
-  const [selectedCameraId, setSelectedCameraId] = useState(null);
-  const [currentCameraMode, setCurrentCameraMode] = useState("back"); // Default ke belakang
-  const [isSwitchingCamera, setIsSwitchingCamera] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [cameraError, setCameraError] = useState(null);
   const [isVideoReady, setIsVideoReady] = useState(false);
   const [isMapReady, setIsMapReady] = useState(false);
   const [leafletLoaded, setLeafletLoaded] = useState(false);
-  const [actualCameraLabel, setActualCameraLabel] = useState("");
 
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
@@ -191,77 +186,7 @@ export default function PresenceCamera({
     }
   };
 
-  // Fungsi untuk mendapatkan label kamera yang sebenarnya
-  const getActualCameraLabel = (deviceId, devices) => {
-    const device = devices.find(d => d.deviceId === deviceId);
-    if (device && device.label) {
-      const label = device.label.toLowerCase();
-      if (label.includes('back') || label.includes('rear') || label.includes('environment')) {
-        return "Belakang";
-      } else if (label.includes('front') || label.includes('user') || label.includes('face')) {
-        return "Depan";
-      }
-    }
-    return "Unknown";
-  };
-
-  const getCameraDevices = async () => {
-    try {
-      setCameraError(null);
-      
-      if (!navigator.mediaDevices?.enumerateDevices) {
-        setCameraError("Browser tidak mendukung enumerasi perangkat");
-        return null;
-      }
-      
-      // Minta izin kamera dulu agar label terisi
-      await navigator.mediaDevices.getUserMedia({ video: true });
-      
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const videoDevices = devices.filter(device => device.kind === 'videoinput');
-      
-      console.log("Available cameras:", videoDevices.map(d => ({ label: d.label, id: d.deviceId })));
-      
-      if (isMounted.current) {
-        setCameraDevices(videoDevices);
-      }
-      
-      // Prioritaskan kamera belakang (back/rear/environment)
-      let backCamera = videoDevices.find(d => {
-        const label = d.label.toLowerCase();
-        return label.includes('back') || label.includes('rear') || label.includes('environment');
-      });
-      
-      let frontCamera = videoDevices.find(d => {
-        const label = d.label.toLowerCase();
-        return label.includes('front') || label.includes('user') || label.includes('face');
-      });
-      
-      // Jika tidak ditemukan berdasarkan label, gunakan indeks
-      // Biasanya kamera belakang adalah indeks 0
-      if (!backCamera && videoDevices.length > 0) {
-        // Coba gunakan deviceId yang lebih panjang (biasanya kamera belakang)
-        backCamera = videoDevices.find(d => d.deviceId && d.deviceId.length > 20) || videoDevices[0];
-      }
-      
-      if (backCamera) {
-        if (isMounted.current) {
-          setSelectedCameraId(backCamera.deviceId);
-          setCurrentCameraMode("back");
-          setActualCameraLabel(getActualCameraLabel(backCamera.deviceId, videoDevices));
-        }
-        return backCamera.deviceId;
-      }
-      
-      return null;
-      
-    } catch (error) {
-      console.error("Error mendapatkan daftar kamera:", error);
-      return null;
-    }
-  };
-
-  const startCameraWithDevice = async (deviceId = null) => {
+  const startCamera = async () => {
     try {
       if (!isMounted.current) return null;
       
@@ -277,26 +202,15 @@ export default function PresenceCamera({
       
       stopCamera();
       
-      // Gunakan deviceId yang spesifik jika ada
-      let constraints;
-      if (deviceId && cameraDevices.length > 0) {
-        constraints = {
-          video: { deviceId: { exact: deviceId } },
-          audio: false
-        };
-      } else {
-        // Gunakan facingMode
-        constraints = {
-          video: { 
-            facingMode: currentCameraMode === "front" ? "user" : "environment",
-            width: { ideal: 1280 },
-            height: { ideal: 720 }
-          },
-          audio: false
-        };
-      }
-      
-      console.log("Starting camera with constraints:", constraints);
+      // FORCE MENGGUNAKAN KAMERA DEPAN (facingMode: "user")
+      const constraints = {
+        video: { 
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          facingMode: { exact: "user" } // Memaksa kamera depan, jika tidak ada akan error
+        },
+        audio: false
+      };
       
       const newStream = await navigator.mediaDevices.getUserMedia(constraints);
       
@@ -317,80 +231,45 @@ export default function PresenceCamera({
       
     } catch (error) {
       console.error("Error mengakses kamera:", error);
+      
+      // Fallback jika facingMode exact gagal
       if (error.name === 'OverconstrainedError') {
-        // Fallback tanpa deviceId
         try {
-          const fallbackStream = await navigator.mediaDevices.getUserMedia({
-            video: true,
+          console.log("Mencoba dengan facingMode: user (tidak exact)");
+          const fallbackConstraints = {
+            video: { 
+              width: { ideal: 1280 },
+              height: { ideal: 720 },
+              facingMode: "user" // Tidak exact, tetap prioritas kamera depan
+            },
             audio: false
-          });
-          setStream(fallbackStream);
-          if (videoRef.current) {
-            videoRef.current.srcObject = fallbackStream;
-            await playVideo(videoRef.current);
+          };
+          
+          const fallbackStream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
+          
+          if (isMounted.current) {
+            setStream(fallbackStream);
+            if (videoRef.current) {
+              videoRef.current.srcObject = fallbackStream;
+              await playVideo(videoRef.current);
+            }
+            setIsLoading(false);
+            return fallbackStream;
           }
-          setIsLoading(false);
-          return fallbackStream;
         } catch (fallbackError) {
           console.error("Fallback juga gagal:", fallbackError);
-          setCameraError("Tidak dapat mengakses kamera. Pastikan Anda memberikan izin akses kamera.");
+          if (isMounted.current) {
+            setCameraError("Tidak dapat mengakses kamera depan. Pastikan perangkat Anda memiliki kamera depan.");
+          }
         }
       } else {
-        setCameraError("Tidak dapat mengakses kamera. Pastikan Anda memberikan izin akses kamera.");
+        if (isMounted.current) {
+          setCameraError("Tidak dapat mengakses kamera. Pastikan Anda memberikan izin akses kamera.");
+        }
       }
+      
       setIsLoading(false);
       return null;
-    }
-  };
-
-  const startCamera = async () => {
-    const deviceId = await getCameraDevices();
-    await startCameraWithDevice(deviceId);
-  };
-
-  const switchCamera = async () => {
-    if (cameraDevices.length < 2) {
-      alert("Hanya ditemukan 1 kamera. Tidak bisa mengganti.");
-      return;
-    }
-    
-    setIsSwitchingCamera(true);
-    
-    try {
-      // Tentukan mode baru
-      const newMode = currentCameraMode === "front" ? "back" : "front";
-      
-      // Cari deviceId untuk mode baru
-      let targetDeviceId = null;
-      if (newMode === "back") {
-        const backCamera = cameraDevices.find(d => {
-          const label = d.label.toLowerCase();
-          return label.includes('back') || label.includes('rear') || label.includes('environment');
-        });
-        targetDeviceId = backCamera?.deviceId;
-      } else {
-        const frontCamera = cameraDevices.find(d => {
-          const label = d.label.toLowerCase();
-          return label.includes('front') || label.includes('user') || label.includes('face');
-        });
-        targetDeviceId = frontCamera?.deviceId;
-      }
-      
-      // Update state mode terlebih dahulu
-      setCurrentCameraMode(newMode);
-      
-      // Update label
-      const newLabel = newMode === "back" ? "Belakang" : "Depan";
-      setActualCameraLabel(newLabel);
-      
-      // Mulai kamera dengan device yang sesuai
-      await startCameraWithDevice(targetDeviceId);
-      
-    } catch (error) {
-      console.error("Error mengganti kamera:", error);
-      alert("Gagal mengganti kamera. Silakan coba lagi.");
-    } finally {
-      setIsSwitchingCamera(false);
     }
   };
 
@@ -688,7 +567,7 @@ export default function PresenceCamera({
     
     setTimeout(() => {
       if (isMounted.current) {
-        startCameraWithDevice(selectedCameraId);
+        startCamera();
       }
     }, 100);
   };
@@ -713,23 +592,11 @@ export default function PresenceCamera({
 
       {!foto ? (
         <>
-          {/* Camera Controls */}
-          <div className="flex justify-between items-center mb-3">
-            <div className="text-sm text-slate-600">
-              Kamera: <span className="font-medium">
-                {actualCameraLabel || (currentCameraMode === "front" ? "Depan" : "Belakang")}
-              </span>
+          {/* Informasi Kamera Depan */}
+          <div className="text-center mb-3">
+            <div className="text-sm text-slate-600 bg-blue-50 inline-block px-3 py-1 rounded-full">
+              📱 Menggunakan Kamera Depan
             </div>
-            {cameraDevices.length > 1 && (
-              <button
-                onClick={switchCamera}
-                disabled={isSwitchingCamera || isLoading}
-                className="flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-sm hover:bg-blue-200 transition-colors"
-              >
-                <RefreshCw size={14} className={isSwitchingCamera ? "animate-spin" : ""} />
-                Ganti Kamera
-              </button>
-            )}
           </div>
 
           {/* Video Preview */}
@@ -748,7 +615,7 @@ export default function PresenceCamera({
                 <div className="text-white text-center">
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-2"></div>
                   <p className="text-sm">
-                    {isLoading ? "Menyiapkan kamera..." : "Memuat video..."}
+                    {isLoading ? "Menyiapkan kamera depan..." : "Memuat video..."}
                   </p>
                 </div>
               </div>
@@ -823,7 +690,7 @@ export default function PresenceCamera({
         <button
           onClick={onClose}
           disabled={isSubmitting}
-          className="flex-1 px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium transition-colors"
+          className="flex-1 px-4 py-2 text-sm bg-red-500 text-white rounded-lg hover:bg-red-600 font-medium"
         >
           Batal
         </button>
@@ -832,7 +699,7 @@ export default function PresenceCamera({
           <button
             onClick={handleRetake}
             disabled={isSubmitting}
-            className="flex-1 px-4 py-2 text-sm bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 font-medium transition-colors"
+            className="flex-1 px-4 py-2 text-sm bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 font-medium"
           >
             Ambil Ulang
           </button>
