@@ -195,9 +195,6 @@ export default function HomePage() {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6 sm:gap-8">
             <div className="flex items-center gap-3 sm:gap-4">
-              <div className="relative w-10 h-10 sm:w-12 sm:h-12">
-
-              </div>
               <div>
                 <h3 className="text-lg sm:text-xl font-bold">
                   SIKO<span className="text-yellow-400">PNAS</span>
