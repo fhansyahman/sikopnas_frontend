@@ -144,7 +144,7 @@ export default function CameraUploader({
                 onClick={() => setTempPhoto(null)}
                 className="flex-1 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
               >
-                Ambil Ulang
+                Batal
               </button>
               <button
                 type="button"
