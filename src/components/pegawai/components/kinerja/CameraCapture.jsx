@@ -355,9 +355,9 @@ export default function CameraCapture({ onCapture, onClose, isOpen }) {
         canvas.width - textX - 20,
         14
       );
-      ctx.fillText(`Lat: ${lat}`, textX, textY + 65);
-      ctx.fillText(`Long: ${lon}`, textX, textY + 80);
-      ctx.fillText(date, textX, textY + 95);
+      ctx.fillText(`Lat: ${lat}`, textX, textY + 45);
+      ctx.fillText(`Long: ${lon}`, textX, textY + 60);
+      ctx.fillText(date, textX, textY + 80);
     }
 
     const img = canvas.toDataURL("image/jpeg", 0.95);
