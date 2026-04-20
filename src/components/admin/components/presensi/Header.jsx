@@ -6,9 +6,28 @@ import { useRouter } from "next/navigation";
 export function Header({ sidebarOpen, setSidebarOpen }) {
   const router = useRouter();
 
-  const handleLogout = async () => {
-    await fetch("/api/logout", { method: "POST" });
-    router.push("/login");
+   const handleLogout = async () => {
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.clear();
+        
+        document.cookie.split(";").forEach((c) => {
+          document.cookie = c
+            .replace(/^ +/, "")
+            .replace(/=.*/, "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;");
+        });
+        
+        sessionStorage.clear();
+      }
+      
+      router.push("/login");
+      
+    } catch (error) {
+      console.error("Error saat logout:", error);
+      router.push("/login");
+    }
   };
 
   return (
